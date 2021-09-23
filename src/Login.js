@@ -1,15 +1,13 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
-import { Button, Card, CardActions, CardContent, Typography, Container, InputAdornment, IconButton } from '@material-ui/core'
+import { useHistory } from 'react-router-dom';
+import { Button, Card, CardActions, CardContent, Typography, Container} from '@material-ui/core'
 import { TextField, OutlinedInput, FormControl } from '@material-ui/core'
-import { Visibility, VisibilityOff } from '@mui/icons-material'
-import axios from 'axios';
+// import axios from 'axios';
 
 export default function Login() {
-  const [values, setValues] = React.useState({
-    password: '',
-    showPassword: false,
-  });
+
+  const [Email, setEmail] = React.useState("");
+  const [Password, setPassword] = React.useState("");
 
   const cardlogin = {
     width: "500px",
@@ -27,46 +25,47 @@ export default function Login() {
   const btn = {
     placeContent: 'center'
   }
+  const history = useHistory();
+  
 
-
-
-  // const handleChange = (prop) => event => {
-  //   setValues({ ...values, [prop]: event.target.value });
-  // };
-
-  const handleClickShowPassword = () => {
-    setValues({
-      ...values,
-      showPassword: !values.showPassword
-    })
-  };
-
-  const handleMouseDownPassword = (event) => {
-    event.preventDefault();
+  async function login()
+  {
+    console.warn(Email, Password)
+    let item = { Email, Password};
+    let res = await fetch("https://ayodhya-dev.qlue.id/api/auths/login", {
+      method: 'POST',
+      headers: {
+        "Content-Type": "application/json",
+        "Accept": "application/json"
+      },
+        body: JSON.stringify(item)
+    });
+    res = await res.json()
+    localStorage.setItem("user-info", JSON.stringify(res))
+    history.push("/dashboard")
   }
 
-  const handleSubmit = e => {
-    e.preventDefault();
+  
+  
 
-    const data = {
-      email: this.email,
-      password: this.password
-    }
+  //   const data = {
+  //     email: this.email,
+  //     password: this.password
+  //   }
 
-    axios.post('https://ayodhya-dev.qlue.id/api/auths/login', data)
-      .then(res => {
-        console.log(res)
-      })
-      .catch(err => {
-        console.log(err)
-      })
-  }
+  //   axios.post('https://ayodhya-dev.qlue.id/api/auths/login', data)
+  //     .then(res => {
+  //       console.log(res)
+  //     })
+  //     .catch(err => {
+  //       console.log(err)
+  //     })
+  // }
 
   return (
     <Container fixed>
       <div className="login-page" style={{ textAlign: '-webkit-center' }} >
         <Card style={cardlogin}>
-          <form onSubmit={handleSubmit}>
             <CardContent>
 
               <Typography style={{ fontSize: 25 }} color="text.secondary" gutterBottom>
@@ -83,7 +82,7 @@ export default function Login() {
                     multiline
                     variant="outlined"
                     style={{ width: '450px', paddingTop: '10px' }}
-                    onChange={e => this.email = e.target.value}
+                    onChange={e => setEmail(e.target.value)}
                   />
                 </FormControl>
               </div>
@@ -94,21 +93,9 @@ export default function Login() {
                   </Typography>
                   <OutlinedInput
                     id="outlined-adornment-password"
-                    type={values.showPassword ? 'text' : 'password'}
-                    value={values.password}
-                    // onChange={handleChange('password')}
-                    endAdornment={
-                      <InputAdornment position="end">
-                        <IconButton
-                          aria-label="toggle password visibility"
-                          onClick={handleClickShowPassword}
-                          onMouseDown={handleMouseDownPassword}
-                          edge="end"
-                        >
-                          {values.showPassword ? <VisibilityOff /> : <Visibility />}
-                        </IconButton>
-                      </InputAdornment>
-                    }
+                    onChange={e => setPassword(e.target.value)}
+                    placeholder="Your Password"
+                    type="password"
                     style={{ width: '450px', marginTop: '10px' }}
 
                   />
@@ -117,14 +104,11 @@ export default function Login() {
               </div>
             </CardContent>
             <CardActions style={btn}>
-              <Link to={`/dashboard`} style={{ textDecoration: 'none' }}>
-                <Button variant="outlined" type="submit" style={{ background: 'rgb(33, 150, 243)', color: 'white' }}>Submit</Button>
-              </Link>
+              {/* <Link to={`/dashboard`} style={{ textDecoration: 'none' }} onClick={login}> */}
+                <Button onClick={login} variant="outlined" type="submit" style={{ background: 'rgb(33, 150, 243)', color: 'white' }}>Submit</Button>
+              {/* </Link> */}
             </CardActions>
-          </form>
         </Card>
-
-
       </div>
     </Container>
 
